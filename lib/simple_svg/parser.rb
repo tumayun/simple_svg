@@ -12,24 +12,25 @@ module SimpleSvg
     #    svg file path
     #
     ## target_height:
-    #    期望 svg viewport height 最终结果为 target_height
+    #    期望 svg viewport 高度最终转换为 target_height
     #
     ## 严格模式:
-    #     只将复杂 svg 解析为简单 svg.
-    #     假设传入的 target_height 值为 1024
-    #     得出的结果 viewport height 为 1024, width 根据 height 等比缩放,
-    #     view_box 为 (0, 0, viewport_width, viewport_height),
-    #     path 会进行相应的计算, 得出调整后的 path.
-    #     如原始 viewport 为 (1024, 512), view_box 为 (-100, -100, 1000, 2000),
-    #     解析后 viewport 为 (2048, 1024), view_box 为 (0, 0, 2048, 1024).
-    #     同时 path 应该相应的计算, 最终得出的 svg 图像与原始图像一致!
+    #     只将复杂 svg 转换为简单 svg。
+    #     假设传入的 target_height 值为 1024，
+    #     最终生成的 svg viewport height 应该是 1024， viewport width 根据 height 等比缩放，
+    #     得出的 view_box 为 (0, 0, viewport_width, viewport_height)，path 会进行重新计算,
+    #     得出调整后的 path，但是生成的新 svg 图像与原始的 svg 图像完全一致！
+    #
+    #     如原始 viewport 为 (1024, 512)，view_box 为 (-100, -100, 1000, 2000)，传入的 target_height 为 1024，
+    #     生成的新 svg viewport 为 (2048, 1024)，view_box 为 (0, 0, 2048, 1024)。
+    #     同时 path 计算后， 最终得出的 svg 图像与原始图像完全一致！
     #
     ## 完美模式:
-    #     先进行严格模式,得出简单 svg.
-    #     假设传入的 target_height 值为 1024
-    #     如果得出的 viewport width 小于 1024, 两边补宽到 1024.
-    #     如果由于 viewport width 原因导致 svg 展示不全, 补宽至能完全展示.
-    #     如果由于 viewport height 原因导致 svg 展示不全, 缩小至能完全展示.
+    #     先进行严格模式，得出转换后的简单 svg，然后进一系列转换。
+    #     假设传入的 target_height 值为 1024，
+    #     如果得出的简单 svg viewport width 小于 1024，要两边补宽到 1024。
+    #     如果由于 viewport width 原因导致 svg 展示不全，补宽至能完全展示。
+    #     如果由于 viewport height 原因导致 svg 展示不全，缩小至能完全展示。
     #
     ## perfect:
     #    true 则开启完美模式
@@ -186,7 +187,7 @@ module SimpleSvg
           offset = @bounding_box[1] + @bounding_box[3] - height
         else
           top_offset    = @bounding_box[1].abs
-          bottom_offset = @bounding_box[1] + @bounding_box[3] - width
+          bottom_offset = @bounding_box[1] + @bounding_box[3] - height
           offset = [top_offset, bottom_offset].max
         end
         @_perfect_transforms << ['translate', [0, offset]]

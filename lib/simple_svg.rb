@@ -1,4 +1,5 @@
-require 'svg_pathify'
 require 'nokogiri'
+require 'svg_pathify'
+require 'savage'
 require_relative 'simple_svg/version'
 require_relative 'simple_svg/parser'
